@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">ch02_exam</string>
-    <string name="btn1">버튼버튼</string>
+    <string name="btn1">네이버 홈페이지 바로가기</string>
+    <string name="btn2">911 전화걸기</string>
+    <string name="btn3">글씨 Toast</string>
+    <string name="btn4">갤러리 열기</string>
 
 </resources>

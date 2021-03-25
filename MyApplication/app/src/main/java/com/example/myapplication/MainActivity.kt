@@ -1,44 +1,69 @@
 package com.example.myapplication
 
-import android.content.Intent
-import android.net.Uri
+
+import android.app.Application
+import android.media.Image
 import android.os.Bundle
-import android.widget.Button
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import org.w3c.dom.Text
 
 class MainActivity : AppCompatActivity() {
-    //버튼 변수 선언
-    lateinit var button1 : Button
-    lateinit var button2 : Button
-    lateinit var button3 : Button
-    lateinit var button4 : Button
+    lateinit var text1 : TextView
+    lateinit var text2 : TextView
+    lateinit var ChkAgree : Switch
+    lateinit var rGroup1 : RadioGroup
+    lateinit var rdoOreo : RadioButton
+    lateinit var rdoPie : RadioButton
+    lateinit var rdoQ : RadioButton
+    lateinit var btnFinish : Button
+    lateinit var btnFirst : Button
+    lateinit var imgAndroid : ImageView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        //변수에 activity_main.xml파일에 버튼을 대입
-        button1 = findViewById<Button>(R.id.button1)
-        button2 = findViewById<Button>(R.id.button2)
-        button3 = findViewById<Button>(R.id.button3)
-        button4 = findViewById<Button>(R.id.button4)
+        title = "애완동물 사진 보기"
 
-        //클릭했을 때 작동하는 람다식 정의
-        button1.setOnClickListener {
-            var mIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://m.nate.com"))
-            startActivity(mIntent)
+        text1 = findViewById(R.id.Text1)
+        ChkAgree = findViewById(R.id.ChkSwitch)
+
+        text2 = findViewById(R.id.text2)
+        rGroup1 = findViewById(R.id.Rgroup1)
+        rdoOreo = findViewById(R.id.RdoOred)
+        rdoPie = findViewById((R.id.RdoPie))
+        rdoQ = findViewById(R.id.RdoQ)
+        btnFinish = findViewById(R.id.BtnFinish)
+        btnFirst = findViewById(R.id.BtnFirst)
+        imgAndroid = findViewById(R.id.ImgAndroid)
+
+        ChkAgree.setOnCheckedChangeListener { compoundButton, b ->
+            if(ChkAgree.isChecked == true){
+                text2.visibility = android.view.View.VISIBLE
+                rGroup1.visibility = android.view.View.VISIBLE
+                btnFinish.visibility = android.view.View.VISIBLE
+                btnFirst.visibility = android.view.View.VISIBLE
+                imgAndroid.visibility = android.view.View.VISIBLE
+            }else{
+                text2.visibility = android.view.View.INVISIBLE
+                rGroup1.visibility = android.view.View.INVISIBLE
+                btnFinish.visibility = android.view.View.INVISIBLE
+                btnFirst.visibility = android.view.View.INVISIBLE
+                imgAndroid.visibility = android.view.View.INVISIBLE
+            }
         }
-        button2.setOnClickListener {
-            var mIntent = Intent(Intent.ACTION_VIEW,Uri.parse("tel:/911"))
-            startActivity(mIntent)
+        rGroup1.setOnCheckedChangeListener { rGroup1, checkedId ->
+            when (checkedId) {
+                R.id.RdoPie -> imgAndroid.setImageResource(R.drawable.pie)
+                R.id.RdoOred -> imgAndroid.setImageResource(R.drawable.oreo)
+                R.id.RdoQ -> imgAndroid.setImageResource(R.drawable.q)
+            }
+
         }
-        button3.setOnClickListener {
-            var mIntent = Intent(Intent.ACTION_VIEW,Uri.parse("conent://media/internal/images/media"))
-            startActivity(mIntent)
-        }
-        button4.setOnClickListener {
+        btnFinish.setOnClickListener {
             finish()
         }
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setIcon(R.drawable.ic_launcher)
+        btnFirst.setOnClickListener {
+            ChkAgree.isChecked = false
+        }
     }
 }
