@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        title = "애완동물 사진 보기"
+        title = "좋아하는 안드로이드 버전"
 
         text1 = findViewById(R.id.Text1)
         ChkAgree = findViewById(R.id.ChkSwitch)
