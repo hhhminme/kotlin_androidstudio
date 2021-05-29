@@ -1,69 +1,67 @@
 package com.example.myapplication
-
-
-import android.app.Application
-import android.media.Image
+import android.app.Activity
+import android.content.Context
+import android.media.MediaPlayer
 import android.os.Bundle
-import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
-import org.w3c.dom.Text
+import android.os.SystemClock
+import android.widget.SeekBar
+import androidx.core.app.ActivityCompat
+import kotlinx.android.synthetic.main.activity_main.*
+import java.text.SimpleDateFormat
 
-class MainActivity : AppCompatActivity() {
-    lateinit var text1 : TextView
-    lateinit var text2 : TextView
-    lateinit var ChkAgree : Switch
-    lateinit var rGroup1 : RadioGroup
-    lateinit var rdoOreo : RadioButton
-    lateinit var rdoPie : RadioButton
-    lateinit var rdoQ : RadioButton
-    lateinit var btnFinish : Button
-    lateinit var btnFirst : Button
-    lateinit var imgAndroid : ImageView
+class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        title = "좋아하는 안드로이드 버전"
+        title = "간단 MP3 플레이어"
+        ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),Context.MODE_PRIVATE)
 
-        text1 = findViewById(R.id.Text1)
-        ChkAgree = findViewById(R.id.ChkSwitch)
+        var mPlayer = MediaPlayer.create(this, R.raw.song1)
 
-        text2 = findViewById(R.id.text2)
-        rGroup1 = findViewById(R.id.Rgroup1)
-        rdoOreo = findViewById(R.id.RdoOred)
-        rdoPie = findViewById((R.id.RdoPie))
-        rdoQ = findViewById(R.id.RdoQ)
-        btnFinish = findViewById(R.id.BtnFinish)
-        btnFirst = findViewById(R.id.BtnFirst)
-        imgAndroid = findViewById(R.id.ImgAndroid)
-
-        ChkAgree.setOnCheckedChangeListener { compoundButton, b ->
-            if(ChkAgree.isChecked == true){
-                text2.visibility = android.view.View.VISIBLE
-                rGroup1.visibility = android.view.View.VISIBLE
-                btnFinish.visibility = android.view.View.VISIBLE
-                btnFirst.visibility = android.view.View.VISIBLE
-                imgAndroid.visibility = android.view.View.VISIBLE
-            }else{
-                text2.visibility = android.view.View.INVISIBLE
-                rGroup1.visibility = android.view.View.INVISIBLE
-                btnFinish.visibility = android.view.View.INVISIBLE
-                btnFirst.visibility = android.view.View.INVISIBLE
-                imgAndroid.visibility = android.view.View.INVISIBLE
+        switch1.setOnClickListener {
+            if(switch1.isChecked == true){
+                mPlayer.start()
+                object : Thread(){
+                    var timeFormat = SimpleDateFormat("mm:ss")
+                    override fun run(){
+                        if(mPlayer == null){
+                            return
+                        }
+                        seek1.max = mPlayer.duration
+                        while(mPlayer.isPlaying){
+                            runOnUiThread {
+                                seek1.progress = mPlayer.currentPosition
+                                tvTime.text = "진행시간 : ${timeFormat.format(mPlayer.currentPosition)}"
+                            }
+                            SystemClock.sleep(200)
+                        }
+                    }
+                }.start()
+            }
+            else{
+                mPlayer.pause()
             }
         }
-        rGroup1.setOnCheckedChangeListener { rGroup1, checkedId ->
-            when (checkedId) {
-                R.id.RdoPie -> imgAndroid.setImageResource(R.drawable.pie)
-                R.id.RdoOred -> imgAndroid.setImageResource(R.drawable.oreo)
-                R.id.RdoQ -> imgAndroid.setImageResource(R.drawable.q)
-            }
+        seek1.setOnSeekBarChangeListener(
+                object : SeekBar.OnSeekBarChangeListener{
+                    override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+                        if(p2){
+                            seek1.max = mPlayer.duration
+                            mPlayer.seekTo(p1)
+                        }
+                    }
 
-        }
-        btnFinish.setOnClickListener {
-            finish()
-        }
-        btnFirst.setOnClickListener {
-            ChkAgree.isChecked = false
-        }
+                    override fun onStartTrackingTouch(p0: SeekBar?) {
+                    }
+
+                    override fun onStopTrackingTouch(p0: SeekBar?) {
+
+                    }
+                }
+        )
     }
 }
+
+
+
+
