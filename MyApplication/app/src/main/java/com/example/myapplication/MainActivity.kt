@@ -1,64 +1,83 @@
 package com.example.myapplication
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.media.AsyncPlayer
+import android.media.Image
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.os.SystemClock
-import android.widget.SeekBar
+import android.os.Environment
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import kotlinx.android.synthetic.main.activity_main.*
-import java.text.SimpleDateFormat
+import kotlinx.android.synthetic.main.toast1.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.nio.charset.Charset
+import java.util.*
 
-class MainActivity : Activity() {
+class MainActivity : AppCompatActivity() {
+    lateinit var fileName : String
+    val strSDpath = Environment.getExternalStorageDirectory().absolutePath
+    val myDir = File("$strSDpath/myDiary")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        title = "간단 MP3 플레이어"
-        ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),Context.MODE_PRIVATE)
+        ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
+        Context.MODE_PRIVATE)
+        title = "영화 선호도 투표"
+        var cal = Calendar.getInstance()
+        var cYear = cal.get(Calendar.YEAR)
+        var cMonth = cal.get(Calendar.YEAR)
+        var cDay = cal.get(Calendar.DAY_OF_MONTH)
 
-        var mPlayer = MediaPlayer.create(this, R.raw.song1)
+        myDir.mkdir()
 
-        switch1.setOnClickListener {
-            if(switch1.isChecked == true){
-                mPlayer.start()
-                object : Thread(){
-                    var timeFormat = SimpleDateFormat("mm:ss")
-                    override fun run(){
-                        if(mPlayer == null){
-                            return
-                        }
-                        seek1.max = mPlayer.duration
-                        while(mPlayer.isPlaying){
-                            runOnUiThread {
-                                seek1.progress = mPlayer.currentPosition
-                                tvTime.text = "진행시간 : ${timeFormat.format(mPlayer.currentPosition)}"
-                            }
-                            SystemClock.sleep(200)
-                        }
-                    }
-                }.start()
-            }
-            else{
-                mPlayer.pause()
-            }
+        fileName = (Integer.toString(cYear) + "-"
+                +Integer.toString(cMonth + 1) + "-"
+                +Integer.toString(cDay) + ".txt")
+        var str = readDiary(fileName)
+        edtDiary.setText(str)
+
+        datePicker.init(cYear, cMonth, cDay) { view, year, monthOfYear, dayOfMonth ->
+            fileName = (Integer.toString(year) + "-"
+                    +Integer.toString(monthOfYear + 1) + "-"
+                    +Integer.toString(dayOfMonth) + ".txt")
+            var str = readDiary(fileName)
+            edtDiary.setText(str)
+            btnWrite.isEnabled = true
         }
-        seek1.setOnSeekBarChangeListener(
-                object : SeekBar.OnSeekBarChangeListener{
-                    override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
-                        if(p2){
-                            seek1.max = mPlayer.duration
-                            mPlayer.seekTo(p1)
-                        }
-                    }
 
-                    override fun onStartTrackingTouch(p0: SeekBar?) {
-                    }
+        btnWrite.setOnClickListener {
+            var outFs = FileOutputStream("$strSDpath/myDiary/$fileName")
+            var str = edtDiary.text.toString()
+            outFs.write(str.toByteArray())
+            outFs.close()
+            Toast.makeText(this, "$fileName 이 저장됨", Toast.LENGTH_SHORT).show()
+        }
 
-                    override fun onStopTrackingTouch(p0: SeekBar?) {
 
-                    }
-                }
-        )
+    }
+    fun readDiary(fName : String) : String? {
+        var diaryStr : String? = null
+        try {
+            var inFs = FileInputStream("$strSDpath/myDiary/$fName")
+            var text = ByteArray(inFs.available())
+            inFs.read(text)
+            diaryStr = text.toString(Charsets.UTF_8).trim()
+            btnWrite.text = "수정하기"
+            inFs.close()
+        }catch (e : IOException){
+            edtDiary.hint = "일기 없음"
+            btnWrite.text = "새로 저장"
+        }
+        return diaryStr
     }
 }
 
