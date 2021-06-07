@@ -3,24 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
- <DatePicker
-     android:id="@+id/datePicker"
-     android:calendarViewShown="false"
-     android:datePickerMode="spinner"
+ <Button
+     android:id="@+id/btnStart"
+     android:text="음악 서비스 시작"
      android:layout_width="match_parent"
      android:layout_height="wrap_content"/>
- <EditText
-     android:id="@+id/edtDiary"
-     android:layout_width="match_parent"
-     android:layout_height="wrap_content"
-     android:background="#00ff00"
-     android:lines="8"
-     />
  <Button
-     android:id="@+id/btnWrite"
+     android:id="@+id/btnStop"
+     android:text="음악 서비스 중지"
      android:layout_width="match_parent"
-     android:layout_height="wrap_content"
-     android:enabled="false"
-     android:text="파일 쓰기"
-     />
+     android:layout_height="wrap_content"/>
 </LinearLayout>
